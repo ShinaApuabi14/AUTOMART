@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehicle Breakdown Feedback Survey</title>
+<style>
+  :root{
+    --navy:#0b2447;
+    --blue:#1a5fb4;
+    --blue-light:#e8f1fc;
+    --accent:#2e86de;
+    --text:#1b1f27;
+    --muted:#6b7280;
+    --border:#dbe4ef;
+    --bg:#f4f7fb;
+    --white:#ffffff;
+    --success:#1e8e5a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .card{
+    width:100%;
+    max-width:560px;
+    background:var(--white);
+    border-radius:16px;
+    box-shadow:0 8px 30px rgba(11,36,71,0.08);
+    overflow:hidden;
+  }
+  .header{
+    background:linear-gradient(135deg,var(--navy),var(--blue));
+    color:var(--white);
+    padding:28px 28px 24px;
+  }
+  .header .brand{
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    opacity:0.85;
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .header h1{
+    margin:0 0 8px;
+    font-size:22px;
+    line-height:1.35;
+  }
+  .header p{
+    margin:0;
+    font-size:14px;
+    opacity:0.9;
+    line-height:1.5;
+  }
+  .body{
+    padding:28px;
+  }
+  .question{
+    margin-bottom:30px;
+  }
+  .question:last-of-type{
+    margin-bottom:8px;
+  }
+  .q-label{
+    font-size:15px;
+    font-weight:600;
+    color:var(--text);
+    margin-bottom:4px;
+    line-height:1.5;
+  }
+  .q-sub{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:16px;
+    line-height:1.5;
+  }
+  .scale{
+    display:flex;
+    gap:8px;
+    justify-content:space-between;
+  }
+  .scale-option{
+    flex:1;
+    text-align:center;
+  }
+  .scale-option input{
+    display:none;
+  }
+  .scale-option label{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    padding:10px 4px;
+    border-radius:10px;
+    border:1.5px solid var(--border);
+    transition:all .15s ease;
+    height:100%;
+  }
+  .scale-option .num{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:var(--blue-light);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:14px;
+    color:var(--blue);
+    transition:all .15s ease;
+  }
+  .scale-option .tag{
+    font-size:10.5px;
+    color:var(--muted);
+    line-height:1.2;
+    min-height:26px;
+  }
+  .scale-option input:checked + label{
+    border-color:var(--accent);
+    background:var(--blue-light);
+  }
+  .scale-option input:checked + label .num{
+    background:var(--accent);
+    color:var(--white);
+  }
+  .choice-group{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .choice{
+    position:relative;
+  }
+  .choice input{
+    display:none;
+  }
+  .choice label{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 16px;
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14.5px;
+    font-weight:500;
+    transition:all .15s ease;
+  }
+  .choice .dot{
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    border:2px solid var(--border);
+    flex-shrink:0;
+    position:relative;
+  }
+  .choice input:checked + label{
+    border-color:var(--accent);
+    background:var(--blue-light);
+  }
+  .choice input:checked + label .dot{
+    border-color:var(--accent);
+  }
+  .choice input:checked + label .dot::after{
+    content:'';
+    position:absolute;
+    inset:3px;
+    border-radius:50%;
+    background:var(--accent);
+  }
+  .submit-btn{
+    width:100%;
+    padding:15px;
+    background:var(--navy);
+    color:var(--white);
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:6px;
+    transition:background .15s ease;
+  }
+  .submit-btn:hover{ background:var(--blue); }
+  .submit-btn:disabled{ opacity:0.6; cursor:not-allowed; }
+  .error-msg{
+    color:#c0392b;
+    font-size:13px;
+    margin-top:8px;
+    display:none;
+  }
+  .footer-note{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:16px;
+  }
+  .thankyou{
+    padding:56px 28px;
+    text-align:center;
+    display:none;
+  }
+  .thankyou .check{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:var(--success);
+    color:var(--white);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    margin:0 auto 18px;
+  }
+  .thankyou h2{
+    margin:0 0 8px;
+    font-size:19px;
+  }
+  .thankyou p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+  }
+  @media (max-width:400px){
+    .scale-option .tag{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card" id="surveyCard">
+  <div class="header">
+    <div class="brand">CredPal &middot; Vehicle Owner Feedback</div>
+    <h1>Help us understand your breakdown experience</h1>
+    <p>A 30-second survey for vehicle owners. Your feedback helps us design better roadside support.</p>
+  </div>
+
+  <form class="body" id="surveyForm">
+    <div class="question">
+      <div class="q-label">1. As a vehicle owner, has your vehicle ever broken down in an unknown or unfamiliar location?</div>
+      <div class="q-sub">Rate how severe or stressful this experience has been for you (1 = Not Sure / never really an issue, 5 = Severely / a major problem).</div>
+      <div class="scale" role="radiogroup" aria-label="Breakdown severity rating">
+        <div class="scale-option">
+          <input type="radio" name="severity" id="sev1" value="1" required>
+          <label for="sev1"><span class="num">1</span><span class="tag">Not Sure</span></label>
+        </div>
+        <div class="scale-option">
+          <input type="radio" name="severity" id="sev2" value="2">
+          <label for="sev2"><span class="num">2</span><span class="tag">Rarely</span></label>
+        </div>
+        <div class="scale-option">
+          <input type="radio" name="severity" id="sev3" value="3">
+          <label for="sev3"><span class="num">3</span><span class="tag">Sometimes</span></label>
+        </div>
+        <div class="scale-option">
+          <input type="radio" name="severity" id="sev4" value="4">
+          <label for="sev4"><span class="num">4</span><span class="tag">Often</span></label>
+        </div>
+        <div class="scale-option">
+          <input type="radio" name="severity" id="sev5" value="5">
+          <label for="sev5"><span class="num">5</span><span class="tag">Severely</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="q-label">2. Would you support a service where the nearest, highly-rated auto-repairer can be shown your location the moment your car breaks down, so they can find and reach you faster?</div>
+      <div class="choice-group" role="radiogroup" aria-label="Support for auto-repairer location feature">
+        <div class="choice">
+          <input type="radio" name="support" id="sup_yes" value="Yes" required>
+          <label for="sup_yes"><span class="dot"></span> Yes, I would support this</label>
+        </div>
+        <div class="choice">
+          <input type="radio" name="support" id="sup_maybe" value="Maybe">
+          <label for="sup_maybe"><span class="dot"></span> Maybe, depends on how it works</label>
+        </div>
+        <div class="choice">
+          <input type="radio" name="support" id="sup_no" value="No">
+          <label for="sup_no"><span class="dot"></span> No, I would not support this</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-msg" id="errorMsg">Please answer both questions before submitting.</div>
+    <button type="submit" class="submit-btn" id="submitBtn">Submit Feedback</button>
+    <div class="footer-note">Responses are anonymous and used only to improve CredPal's roadside support planning.</div>
+  </form>
+
+  <div class="thankyou" id="thankYou">
+    <div class="check">&#10003;</div>
+    <h2>Thank you for your feedback!</h2>
+    <p>Your response has been recorded. It helps us build better support for vehicle owners like you.</p>
+  </div>
+</div>
+
+<script>
+  // Paste your deployed Apps Script Web App URL here (see SETUP-GUIDE.md)
+  const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+  const form = document.getElementById('surveyForm');
+  const errorMsg = document.getElementById('errorMsg');
+  const submitBtn = document.getElementById('submitBtn');
+  const surveyCard = document.getElementById('surveyCard');
+  const thankYou = document.getElementById('thankYou');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const severity = form.querySelector('input[name="severity"]:checked');
+    const support = form.querySelector('input[name="support"]:checked');
+
+    if (!severity || !support) {
+      errorMsg.style.display = 'block';
+      return;
+    }
+    errorMsg.style.display = 'none';
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const payload = {
+      severity: severity.value,
+      support: support.value,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent
+    };
+
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0) {
+      // No backend configured yet — just show the thank-you state so the form can be previewed.
+      console.warn('APPS_SCRIPT_URL is not set. See SETUP-GUIDE.md to connect this form to your Google Sheet.');
+      showThankYou();
+      return;
+    }
+
+    const body = new URLSearchParams(payload);
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script web apps don't return CORS headers; no-cors lets the write still go through
+      body: body
+    })
+    .then(function () {
+      showThankYou();
+    })
+    .catch(function (err) {
+      console.error('Submission failed:', err);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Feedback';
+      errorMsg.textContent = 'Something went wrong submitting your response. Please try again.';
+      errorMsg.style.display = 'block';
+    });
+  });
+
+  function showThankYou() {
+    form.style.display = 'none';
+    document.querySelector('.header p').textContent = 'Thanks for helping us improve.';
+    thankYou.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
